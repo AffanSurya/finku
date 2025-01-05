@@ -12,7 +12,7 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.secondBackground,
+      fillColor: const Color(0xffe0f7e9), 
       hintStyle: const TextStyle(
         color: Color(0xffa7a7a7),
         fontWeight: FontWeight.w400
@@ -25,8 +25,7 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
         borderSide: BorderSide.none
-      )
-      
+      )      
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
