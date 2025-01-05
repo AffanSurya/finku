@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primary = Color(0xffBAD8B6);
-  static const background = Color(0xffF9F6E6);
-  static const secondBackground = Color(0xffE1EACD);
+  static const primary = Color(0xffA8E6CF); // Hijau muda
+  static const background = Color(0xffF5F5F5); // Abu-abu sangat muda (netral)
+  static const secondBackground = Color(0xffFFFBF2); // Putih krem
+  static const inputFill = Color(0xffE0E0E0); // Abu-abu muda
 }

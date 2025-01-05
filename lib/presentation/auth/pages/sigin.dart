@@ -14,7 +14,9 @@ class SiginPage extends StatelessWidget {
           children: [
             _signinText(),
             const SizedBox(height: 30,),
-            _emailField()
+            _emailField(),
+            const SizedBox(height: 20,),
+            _passwordField()
           ],
         )
         ),
@@ -35,6 +37,14 @@ class SiginPage extends StatelessWidget {
     return const TextField(
       decoration: InputDecoration(
         hintText: "Email"
+      ),
+    );
+  }
+
+  Widget _passwordField(){
+    return const TextField(
+      decoration: InputDecoration(
+        hintText: "Password"
       ),
     );
   }
