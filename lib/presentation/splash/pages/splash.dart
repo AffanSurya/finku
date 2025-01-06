@@ -1,7 +1,7 @@
 // import 'package:finku/core/configs/assets/app_images.dart';
 import 'package:finku/common/helper/navigation/app_navigation.dart';
 import 'package:finku/core/configs/assets/app_vectors.dart';
-import 'package:finku/presentation/auth/pages/sigin.dart';
+import 'package:finku/presentation/auth/pages/signin.dart';
 import 'package:finku/presentation/home/pages/home.dart';
 import 'package:finku/presentation/splash/bloc/splash_cubit.dart';
 import 'package:finku/presentation/splash/bloc/splash_state.dart';
@@ -18,7 +18,7 @@ class SplashPage extends StatelessWidget {
       body: BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
           if (state is UnAuthenticated) {
-            AppNavigator.pushReplacement(context, const SiginPage());
+            AppNavigator.pushReplacement(context, const SigninPage());
           }
 
           if (state is Authenticated) {
