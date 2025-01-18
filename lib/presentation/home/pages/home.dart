@@ -1,82 +1,126 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:finku/core/configs/assets/app_images.dart';
 import 'package:finku/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int currentPageIndex = 0;
-  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-
-
-  @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: _appBar(),
-      bottomNavigationBar: CurvedNavigationBar(
-        key: _bottomNavigationKey,
-        backgroundColor: AppColors.background,
-        color: AppColors.primary,
-        buttonBackgroundColor: AppColors.primary,
-        items: [
-          Image.asset(AppImages.home),
-          Image.asset(AppImages.chart),
-          Container(child: const Text(''),),
-          Image.asset(AppImages.report),
-          Image.asset(AppImages.setting),
-        ],
-        index: currentPageIndex,
-        letIndexChange: (index) => true,
-        onTap: (index) {
-          currentPageIndex = index;
-        },
-      ),
-      floatingActionButton: SizedBox(
-        height: 70,
-        width: 70,
-        child: FloatingActionButton(
-          onPressed: (){
-            final CurvedNavigationBarState? navBarState = 
-              _bottomNavigationKey.currentState;
-            navBarState?.setPage(2);
-          }, 
-          backgroundColor: AppColors.secondPrimary,
-          child: Image.asset(AppImages.plus),
-          ),
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Column(
+          children: [
+            _incomeOutcome(),
+            _textTransaction(),
+            _listTransaction(),
+            _listTransaction(),
+          ],
+        )
       ),
     );
   }
 
-  AppBar _appBar() {
-    return AppBar(
-      centerTitle: false,
-      backgroundColor: AppColors.background,
-      toolbarHeight: 90,
-      title: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Hai Zero', 
-            style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 24
+  Padding _listTransaction() {
+    return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Card(
+              elevation: 10,
+              child: ListTile(
+                trailing: const Row(
+                  mainAxisSize: MainAxisSize.min ,
+                  children: [
+                    Icon(Icons.delete),
+                    SizedBox(width: 10,),
+                    Icon(Icons.edit)
+                  ],
+                ),
+                title: const Text('Rp 20.000'),
+                subtitle: const Text('Makan siang'),
+                leading: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: const Icon(Icons.upload, color: Colors.red),
+                ),
               ),
             ),
-          Text(
-            'Senang Bertemu Lagi!',
-            style: TextStyle(
-              fontSize: 30
+          );
+  }
+
+  Padding _textTransaction() {
+    return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Transaksi',
+              style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold),
             ),
+          );
+  }
+
+  Padding _incomeOutcome() {
+    return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(16)
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        
+                        children: [
+                          Text(
+                            'Pemasukan',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 15
+                            ),
+                            ),
+                            const SizedBox(height: 5,),
+                          Text(
+                            'Rp. 3.000.000',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 15
+                            )
+                            )
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Column(                          
+                        children: [
+                          Text(
+                            'Pengeluaran',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 15
+                            ),
+                            ),
+                            const SizedBox(height: 5,),
+                          Text(
+                            'Rp. 3.000.000',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 15
+                            )
+                            )
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-        ],
-      ),
-    );
+          );
   }
 }

@@ -2,7 +2,7 @@
 import 'package:finku/common/helper/navigation/app_navigation.dart';
 import 'package:finku/core/configs/assets/app_vectors.dart';
 
-import 'package:finku/presentation/home/pages/home.dart';
+import 'package:finku/presentation/navigation/pages/navigation.dart';
 import 'package:finku/presentation/splash/bloc/splash_cubit.dart';
 import 'package:finku/presentation/splash/bloc/splash_state.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class SplashPage extends StatelessWidget {
       body: BlocListener<SplashCubit, SplashState>(
       listener: (context, state) {
           
-            AppNavigator.pushReplacement(context, const HomePage());
+            AppNavigator.pushReplacement(context, const NavigationPage());
           
       },
         child: Center(
