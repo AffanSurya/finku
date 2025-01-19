@@ -9,6 +9,7 @@ import 'package:finku/presentation/transaction/pages/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class NavigationPage extends StatefulWidget {
@@ -19,10 +20,19 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  final List<Widget> _children = [const HomePage(), const TransactionPage(), const CategoryPage()];
+  late DateTime selectedDate;
+  late List<Widget> _children;
   int currenIndexDialog = 0;
   int currentPageIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
+  void updateView(int index, DateTime? date) {
+    setState(() {
+      if (date != null) {
+        selectedDate = DateTime.parse(DateFormat('yyyy-MM-dd').format(date));
+      }
+    });
+  }
 
   final AppDatabase database = AppDatabase();
   TextEditingController categoryNameController = TextEditingController();
@@ -40,8 +50,6 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void openDialog() {
-    
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -171,10 +179,12 @@ class _NavigationPageState extends State<NavigationPage> {
                   onPressed: () {
                     insert(categoryNameController.text, currenIndexDialog + 1);
                     Navigator.of(context, rootNavigator: true).pop('dialog');
+                    // Navigator.pop(context, true);
 
                     setState(() {
                       
                     });
+                    categoryNameController.clear();
                   }, 
                   child: Text(
                     'Simpan',

@@ -1,4 +1,5 @@
 import 'package:finku/core/configs/theme/app_colors.dart';
+import 'package:finku/data/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,10 +14,31 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
-  int currentToggle = 1;
-  List<String> list = ['makan', 'minum', 'jalan'];
-  late String dropDownValue = list.first;
+  final AppDatabase database = AppDatabase();
+  int currentToggle = 0;
   TextEditingController dateController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  Category? selectedCategory;
+
+  Future<List<Category>> getAllCategory(int type) async {
+    return await database.getAllCategoryRepo(type);
+  }
+
+  Future insert(int amount, DateTime date, String description, int categoryId) async {
+     DateTime now = DateTime.now();
+    final row = await database.into(database.transactions).insertReturning(
+        TransactionsCompanion.insert(
+            description: description,
+            categoryId: categoryId,
+            amount: amount,
+            transactionDate: date,
+            createdAt: now,
+            updatedAt: now));
+
+    print(row);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +57,7 @@ class _TransactionPageState extends State<TransactionPage> {
               Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: TextFormField(
-                
+                controller: amountController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
@@ -54,26 +76,53 @@ class _TransactionPageState extends State<TransactionPage> {
                 style: GoogleFonts.montserrat(fontSize: 16),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<String>(
-                value: dropDownValue,
-                isExpanded: true,
-                icon: const Icon(Icons.arrow_downward),
-                items: list.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-              
-                  value: value,
-                  child: Text(value)
-                  );
-                }).toList(),
-                onChanged: (String? value) {},
-              ),
+            FutureBuilder<List<Category>>(
+              future: getAllCategory(currentToggle + 1),
+              // initialData: InitialData,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                }else{
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isNotEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: DropdownButton<Category>(
+                          value: (selectedCategory == null) ? snapshot.data!.first : selectedCategory,
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_downward),
+                          items: snapshot.data!.map((Category item) {
+                            return DropdownMenuItem<Category>(
+                              value: item,
+                              child: Text(item.name),
+                            );
+                          }).toList(),
+                          onChanged: (Category? value){
+                            setState(() {
+                            selectedCategory = value;
+                            });
+                          },
+                        ),
+                      );
+                    }else{
+                      return const Center(
+                        child: Text('Data Kosong'),
+                      );
+                    }
+                  } else {
+                      return const Center(
+                        child: Text('Tidak Ada Data'),
+                      );
+                    
+                  }
+                }
+              },
             ),
+            
             const SizedBox(height: 25,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
+              child: TextFormField(
                 readOnly: true,
                 controller: dateController,
                 decoration: const InputDecoration(labelText: 'Tanggal'),
@@ -91,11 +140,32 @@ class _TransactionPageState extends State<TransactionPage> {
                   }
                 },
               ),
+            ),const SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: TextFormField(
+                controller: descriptionController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+
+                  labelText: 'Keterangan',
+                ),
+              ),
             ),
+            
             const SizedBox(height: 25),
             Center(
               child: ElevatedButton(
-                onPressed: () {}, 
+                onPressed: () {
+                  insert(
+                    int.parse(amountController.text), 
+                    DateTime.parse(dateController.text), 
+                    descriptionController.text, 
+                    selectedCategory!.id
+                    );
+                    Navigator.pop(context, true);
+                }, 
                 child: const Text('Simpan', style: TextStyle(color: Colors.white))
                 ),
             )
@@ -127,6 +197,7 @@ class _TransactionPageState extends State<TransactionPage> {
                       onToggle: (index) {
                         setState(() {
                           currentToggle = index!;
+                          selectedCategory = null;
                         });
                       },
                     ),
