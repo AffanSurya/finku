@@ -17,7 +17,7 @@ class AppDatabase extends _$AppDatabase {
   int get schemaVersion => 1;
 
   // Controller
-  // crud caategory
+  // crud category
   Future<List<Category>> getAllCategoryRepo(int type) async{
     return await (select(categories)..where((tbl) => 
     tbl.type.equals(type)
@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
 
 
   // transaction
-  Stream<List<TransactionWithCategory>> getTransactionByDate(DateTime date) {
+  Stream<List<TransactionWithCategory>> getTransactionByDateRepo(DateTime date) {
     final query = (select(transactions).join([
       innerJoin((categories), categories.id.equalsExp(transactions.categoryId))
     ])..where(transactions.transactionDate.equals(date))
@@ -51,6 +51,24 @@ class AppDatabase extends _$AppDatabase {
           row.readTable(categories));
       }).toList();
     });
+  }
+
+  Future deleteTransactionByDateRepo(int id) async {
+    return (delete(transactions)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  Future<int> getTotalAmountByDateAndCategoryType(DateTime date, int categoryType) async {
+    final query = select(transactions).join([
+      innerJoin(categories, categories.id.equalsExp(transactions.categoryId))
+    ])
+      ..where(transactions.transactionDate.equals(date))
+      ..where(categories.type.equals(categoryType));
+
+    final result = await query.map((row) {
+      return row.readTable(transactions).amount;
+    }).get();
+
+    return result.fold<int>(0, (sum, amount) => sum + amount);
   }
 
 

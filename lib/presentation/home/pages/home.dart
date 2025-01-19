@@ -1,4 +1,6 @@
 import 'package:finku/core/configs/theme/app_colors.dart';
+import 'package:finku/data/database.dart';
+import 'package:finku/models/transaction_with_category.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,43 +16,120 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final AppDatabase database = AppDatabase();
+  int totalOutcome = 0;
+  int totalIncome = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateTotalAmounts();
+  }
+
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDate != oldWidget.selectedDate) {
+      _calculateTotalAmounts();
+    }
+  }
+
+  Future<void> _calculateTotalAmounts() async {
+    final outcome = await getTotalAmountByDateAndCategoryType(widget.selectedDate, 1);
+    final income = await getTotalAmountByDateAndCategoryType(widget.selectedDate, 2);
+
+    setState(() {
+      totalOutcome = outcome;
+      totalIncome = income;
+    });
+  }
+
+  Future<int> getTotalAmountByDateAndCategoryType(DateTime date, int categoryType) async {
+    return await database.getTotalAmountByDateAndCategoryType(date, categoryType);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
           children: [
-            _incomeOutcome(),
+            _incomeOutcome(totalIncome.toString(), totalOutcome.toString()),
             _textTransaction(),
-            _listTransaction(),
-            _listTransaction(),
+            StreamBuilder<List<TransactionWithCategory>>(
+              stream: database.getTransactionByDateRepo(widget.selectedDate),
+              // initialData: initialData,
+              builder: ( context,  snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                }else{
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isNotEmpty) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return _listTransaction(
+                            snapshot.data![index].transaction.id, 
+                            snapshot.data![index].transaction.amount.toString(), 
+                            snapshot.data![index].category.name,
+                            snapshot.data![index].transaction.description,
+                            snapshot.data![index].category.type,
+                            );
+                        }
+                        );
+                    }else{
+                    return const Center(
+                    child: Text('Data Masih Kosong'),
+                  );
+                  }
+                  }else{
+                    return const Center(
+                    child: Text('Tidak Ada Data'),
+                  );
+                  }
+                }
+              },
+            ),
           ],
         )
       ),
     );
   }
 
-  Padding _listTransaction() {
+  Padding _listTransaction(int id, String amount, String category, String description, int type) {
     return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
               elevation: 10,
               child: ListTile(
-                trailing: const Row(
+                trailing: Row(
                   mainAxisSize: MainAxisSize.min ,
                   children: [
-                    Icon(Icons.delete),
-                    SizedBox(width: 10,),
-                    Icon(Icons.edit)
+                    IconButton(
+                      onPressed: () {
+                        database.deleteTransactionByDateRepo(id);
+                        setState(() {
+                          
+                        });
+                      }, 
+                      icon: const Icon(Icons.delete)
+                      ) ,
+                    // SizedBox(width: 10,),
+                    // Icon(Icons.edit)
                   ],
                 ),
-                title: const Text('Rp 20.000'),
-                subtitle: const Text('Makan siang'),
+                title: Text('Rp $amount'),
+                subtitle: Text("$category : $description"),
                 leading: Container(
                   decoration: BoxDecoration(
                     color: Colors.white, borderRadius: BorderRadius.circular(8)
                   ),
-                  child: const Icon(Icons.upload, color: Colors.red),
+                  child: (type == 1) ? const Icon(Icons.upload, color: Colors.red) : 
+                  const Icon(Icons.download, color: Colors.green),
                 ),
               ),
             ),
@@ -67,7 +146,7 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-  Padding _incomeOutcome() {
+  Padding _incomeOutcome(String amountIncome, String amountOutcome) {
     return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
@@ -94,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 5,),
                           Text(
-                            'Rp. 3.000.000',
+                            'Rp. $amountIncome',
                             style: GoogleFonts.montserrat(
                               color: Colors.white,
                               fontSize: 15
@@ -117,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 5,),
                           Text(
-                            'Rp. 3.000.000',
+                            'Rp. $amountOutcome',
                             style: GoogleFonts.montserrat(
                               color: Colors.white,
                               fontSize: 15

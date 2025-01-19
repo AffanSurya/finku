@@ -22,15 +22,26 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   late DateTime selectedDate;
   late List<Widget> _children;
-  int currenIndexDialog = 0;
-  int currentPageIndex = 0;
+  late int currentPageIndex;
+  late int currenIndexDialog;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
-  void updateView(int index, DateTime? date) {
+  @override
+  void initState() {
+    // TODO: implement initState
+    updateView(0, 0, DateTime.now());
+    super.initState();
+  }
+
+  void updateView(int index, int indexDialog, DateTime? date) {
     setState(() {
       if (date != null) {
         selectedDate = DateTime.parse(DateFormat('yyyy-MM-dd').format(date));
       }
+
+      currentPageIndex = index;
+      currenIndexDialog = indexDialog;
+      _children = [HomePage(selectedDate: selectedDate), const TransactionPage(),  const CategoryPage()];
     });
   }
 
@@ -204,7 +215,12 @@ class _NavigationPageState extends State<NavigationPage> {
       accent: AppColors.primary,
       backButton: false,
       locale: 'id',
-      onDateChanged: (value) => print(value),
+      onDateChanged: (value) {
+        setState(() {
+        selectedDate = value;
+        updateView(0, 0, selectedDate);
+        });
+      },
       firstDate: DateTime.now().subtract(const Duration(days: 140)),
       lastDate: DateTime.now(),
     );
