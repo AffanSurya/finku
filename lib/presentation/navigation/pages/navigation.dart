@@ -25,17 +25,17 @@ class _NavigationPageState extends State<NavigationPage> {
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   final AppDatabase database = AppDatabase();
+  TextEditingController categoryNameController = TextEditingController();
 
   Future insert(String name, int type) async {
     DateTime now = DateTime.now();
 
-    final row = await database.into(database.categories).insert(CategoriesCompanion.insert(
+    final row = await database.into(database.categories).insertReturning(CategoriesCompanion.insert(
       name: name,
       type: type,
       createdAt: now,
       updatedAt: now
     ));
-
     print(row);
   }
 
@@ -138,9 +138,10 @@ class _NavigationPageState extends State<NavigationPage> {
                   ),
                   const SizedBox(height: 10,),
                 TextFormField(
+                  controller: categoryNameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Kategori'
+                    hintText: 'Nama'
                   ),
                 ),
                   const SizedBox(height: 10,),
@@ -168,7 +169,12 @@ class _NavigationPageState extends State<NavigationPage> {
                   const SizedBox(height: 10,),
                 ElevatedButton(
                   onPressed: () {
-                    insert('minum', 2);
+                    insert(categoryNameController.text, currenIndexDialog + 1);
+                    Navigator.of(context, rootNavigator: true).pop('dialog');
+
+                    setState(() {
+                      
+                    });
                   }, 
                   child: Text(
                     'Simpan',
