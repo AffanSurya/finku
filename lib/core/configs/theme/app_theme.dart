@@ -12,14 +12,14 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.inputFill, 
+      // fillColor: AppColors.inputFill, 
       hintStyle: const TextStyle(
-        color: Color(0xffa7a7a7),
+        // color: Color(0xffa7a7a7),
         fontWeight: FontWeight.w400
       ),
       contentPadding: const EdgeInsets.all(16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none
       ),
       enabledBorder: OutlineInputBorder(

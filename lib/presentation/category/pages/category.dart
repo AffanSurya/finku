@@ -11,6 +11,7 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   int currentToggle = 0;
+  
 
   @override
   Widget build(BuildContext context) {

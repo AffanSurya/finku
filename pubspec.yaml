@@ -31,15 +31,21 @@ dependencies:
   calendar_appbar: ^0.0.6
   cupertino_icons: ^1.0.8
   curved_navigation_bar: ^1.0.6
+  drift: ^2.23.1
+  drift_flutter: ^0.2.4
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
   flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
+  intl: ^0.17.0
+  path_provider: ^2.1.5
   reactive_button: ^0.0.9
   toggle_switch: ^2.3.0
 
 dev_dependencies:
+  build_runner: ^2.4.14
+  drift_dev: ^2.23.1
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter

@@ -1,7 +1,8 @@
-import 'package:finku/core/configs/assets/app_images.dart';
 import 'package:finku/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -13,6 +14,9 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   int currentToggle = 1;
+  List<String> list = ['makan', 'minum', 'jalan'];
+  late String dropDownValue = list.first;
+  TextEditingController dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,59 +29,81 @@ class _TransactionPageState extends State<TransactionPage> {
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _toggleIncomeOutcome(),
-              _listCategory(),
+              Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: TextFormField(
+                
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+
+                  labelText: 'Jumlah',
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Kategori',
+                style: GoogleFonts.montserrat(fontSize: 16),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: DropdownButton<String>(
+                value: dropDownValue,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_downward),
+                items: list.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
               
+                  value: value,
+                  child: Text(value)
+                  );
+                }).toList(),
+                onChanged: (String? value) {},
+              ),
+            ),
+            const SizedBox(height: 25,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                readOnly: true,
+                controller: dateController,
+                decoration: const InputDecoration(labelText: 'Tanggal'),
+                onTap: () async{
+                  DateTime ? pickedDate = await showDatePicker(
+                    context: context, 
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000), 
+                    lastDate: DateTime(2999)
+                    );
+                  if (pickedDate != null) {
+                    String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+              
+                    dateController.text = formattedDate;
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 25),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {}, 
+                child: const Text('Simpan', style: TextStyle(color: Colors.white))
+                ),
+            )
             ],
           ) 
         ),
       ),
-      floatingActionButton: _floatingActionButton(),
     );
-  }
-
-  SizedBox _floatingActionButton() {
-    return SizedBox(
-      height: 70,
-      width: 70,
-
-      child: FloatingActionButton(
-        onPressed: (){
-          
-        }, 
-        backgroundColor: AppColors.secondPrimary,
-        shape: const CircleBorder(),
-        child: Image.asset(AppImages.plus, height: 40),
-
-        ),
-    );
-  }
-
-  Padding _listCategory() {
-    return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Card(
-              elevation: 10,
-              child: ListTile(
-                trailing: const Row(
-                  mainAxisSize: MainAxisSize.min ,
-                  children: [
-                    Icon(Icons.delete),
-                    SizedBox(width: 10,),
-                    Icon(Icons.edit)
-                  ],
-                ),
-                title: const Text('Makanan'),
-                leading: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white, borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: (currentToggle == 0) ? Icon(Icons.upload, color: Colors.red) : Icon(Icons.download, color: Colors.green),
-                ),
-              ),
-            ),
-          );
   }
 
   Padding _toggleIncomeOutcome() {

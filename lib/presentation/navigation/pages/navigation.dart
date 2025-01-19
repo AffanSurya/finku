@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:finku/common/helper/navigation/app_navigation.dart';
 import 'package:finku/core/configs/assets/app_images.dart';
 import 'package:finku/core/configs/theme/app_colors.dart';
+import 'package:finku/data/database.dart';
 import 'package:finku/presentation/category/pages/category.dart';
 import 'package:finku/presentation/home/pages/home.dart';
 import 'package:finku/presentation/transaction/pages/transaction.dart';
@@ -22,6 +23,21 @@ class _NavigationPageState extends State<NavigationPage> {
   int currenIndexDialog = 0;
   int currentPageIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
+  final AppDatabase database = AppDatabase();
+
+  Future insert(String name, int type) async {
+    DateTime now = DateTime.now();
+
+    final row = await database.into(database.categories).insert(CategoriesCompanion.insert(
+      name: name,
+      type: type,
+      createdAt: now,
+      updatedAt: now
+    ));
+
+    print(row);
+  }
 
   void openDialog() {
     
@@ -77,7 +93,7 @@ class _NavigationPageState extends State<NavigationPage> {
           // final CurvedNavigationBarState? navBarState = 
           //   _bottomNavigationKey.currentState;
           // navBarState?.setPage(1);
-          (currentPageIndex == 0) ? AppNavigator.push(context, TransactionPage()) : openDialog();
+          (currentPageIndex == 0) ? AppNavigator.push(context, const TransactionPage()) : openDialog();
         }, 
         backgroundColor: AppColors.secondPrimary,
         shape: const CircleBorder(),
@@ -120,18 +136,18 @@ class _NavigationPageState extends State<NavigationPage> {
                   'Tambah Kategori', 
                   style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                 TextFormField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Kategori'
                   ),
                 ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   ToggleSwitch(
                     minWidth: 90.0,
                     cornerRadius: 20.0,
-                    activeBgColors: [[Colors.red], [Colors.green]],
+                    activeBgColors: const [[Colors.red], [Colors.green]],
                     activeFgColor: Colors.white,
                     inactiveBgColor: Colors.grey,
                     inactiveFgColor: Colors.white,
@@ -149,9 +165,11 @@ class _NavigationPageState extends State<NavigationPage> {
                       });
                     },
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                 ElevatedButton(
-                  onPressed: () {}, 
+                  onPressed: () {
+                    insert('minum', 2);
+                  }, 
                   child: Text(
                     'Simpan',
                     style: GoogleFonts.montserrat(color: Colors.white),
